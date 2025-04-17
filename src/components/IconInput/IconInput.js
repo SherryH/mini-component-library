@@ -12,12 +12,14 @@ const SIZES = {
     iconWidth: '16px',
     iconGap: '24px',
     borderBottom: '1px solid black',
+    strokeWidth: '1px',
   },
   large: {
     height: '36px',
     iconWidth: '24px',
     iconGap: '36px',
     borderBottom: '2px solid black',
+    strokeWidth: '2px',
   },
 };
 
@@ -28,7 +30,7 @@ const StyledInput = styled.input`
   width: var(--width);
   color: inherit;
   outline-offset: 2px;
-  &:placeholder {
+  &::placeholder {
     color: ${COLORS.gray500};
     font-weight: 400;
   }
@@ -58,26 +60,27 @@ const IconWrapper = styled.div`
 const IconInput = ({
   label,
   icon,
-  width = 250,
+  width = '250px',
   size = 'small',
   value,
   ...rest
 }) => {
-  const { height, iconGap, iconWidth, borderBottom } = SIZES[size];
+  const { height, iconGap, iconWidth, borderBottom, strokeWidth } = SIZES[size];
   return (
     <Wrapper
       style={{
-        '--width': width + 'px',
+        '--width': width,
         '--height': height,
         '--iconGap': iconGap,
         '--iconWidth': iconWidth,
         '--borderBottom': borderBottom,
+        '--strokeWidth': strokeWidth,
       }}
     >
       <IconWrapper>
-        <Icon id={icon} size={iconWidth} />
+        <Icon id={icon} size={iconWidth} strokeWidth={strokeWidth} />
       </IconWrapper>
-      <StyledInput {...rest}>{value}</StyledInput>
+      <StyledInput value={value} {...rest} />
       <VisuallyHidden>{label}</VisuallyHidden>
     </Wrapper>
   );
