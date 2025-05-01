@@ -63,7 +63,7 @@ const StyledIconWrapper = styled.div`
 `;
 
 // Controlled Select
-const ControlledSelect = ({ value, onChange, children, ...rest }) => {
+export const ControlledSelect = ({ value, onChange, children, ...rest }) => {
   const displayedValue = getDisplayedValue(value, children);
 
   return (
@@ -81,14 +81,15 @@ const ControlledSelect = ({ value, onChange, children, ...rest }) => {
   );
 };
 
-export default ControlledSelect;
-
 // Keep the state internally
 // pass the data out using the onChange callback
 export const UncontrolledSelect = ({ children, defaultValue, onChange }) => {
   const [value, setValue] = React.useState(defaultValue);
   const onChangeCallback = React.useCallback(onChange, []);
+  console.log({ value });
   React.useEffect(() => {
+    console.log('inside useeffect');
+    console.log({ value });
     onChange(value);
   }, [value, onChangeCallback]);
   return (
@@ -115,15 +116,30 @@ export const UncontrolledSelect = ({ children, defaultValue, onChange }) => {
 
 // https://github.com/radix-ui/primitives/blob/main/packages/react/use-controllable-state/src/use-controllable-state.tsx#L5
 
-export const Select = ({ value, defaultValue, onChange }) => {
-  // if value
+export const Select = ({ value, defaultValue, onChange, children }) => {
+  // if value is present, then this is a Controlled Component, else it is an Uncontrolled Component
+
+  // If Controlled Component, the state is managed outside,
+  // prop.value = valueStateOutside
+  // prop.onChange = setValueStateOutside  set the valueState to a new value onChange
+
+  // if Uncontrolled
+  // value = valueStateInside (default value is sensible default or defaultValue)
+  // onChange =
+
   const isControlled = value !== undefined;
+  console.log({ isControlled });
+  console.log({ value });
   const SelectElement = isControlled ? ControlledSelect : UncontrolledSelect;
   return (
     <SelectElement
       value={value}
       defaultValue={defaultValue}
       onChange={onChange}
-    />
+    >
+      {children}
+    </SelectElement>
   );
 };
+
+export default Select;

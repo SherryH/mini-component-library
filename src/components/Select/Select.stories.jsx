@@ -25,7 +25,7 @@ export const Uncontrolled = () => {
       >
         Filter by:
       </label>
-      <UncontrolledSelect
+      <Select
         id="uncontrolled"
         label="Sort"
         defaultValue="price"
@@ -36,7 +36,7 @@ export const Uncontrolled = () => {
         <option value="newest">Newest Releases</option>
         <option value="price">Price</option>
         <option value="curated">Curated</option>
-      </UncontrolledSelect>
+      </Select>
     </>
   );
 };
