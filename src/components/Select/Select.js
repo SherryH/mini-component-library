@@ -62,12 +62,13 @@ const StyledIconWrapper = styled.div`
   pointer-events: none;
 `;
 
-const Select = ({ label, value, onChange, children }) => {
+// Controlled Select
+const ControlledSelect = ({ value, onChange, children, ...rest }) => {
   const displayedValue = getDisplayedValue(value, children);
 
   return (
     <Wrapper>
-      <NativeSelect value={value} onChange={onChange}>
+      <NativeSelect value={value} onChange={onChange} {...rest}>
         {children}
       </NativeSelect>
       <StyledSelect>
@@ -80,4 +81,49 @@ const Select = ({ label, value, onChange, children }) => {
   );
 };
 
-export default Select;
+export default ControlledSelect;
+
+// Keep the state internally
+// pass the data out using the onChange callback
+export const UncontrolledSelect = ({ children, defaultValue, onChange }) => {
+  const [value, setValue] = React.useState(defaultValue);
+  const onChangeCallback = React.useCallback(onChange, []);
+  React.useEffect(() => {
+    onChange(value);
+  }, [value, onChangeCallback]);
+  return (
+    <ControlledSelect
+      id="filter-by"
+      defaultValue={defaultValue}
+      value={value}
+      onChange={(ev) => {
+        setValue(ev.target.value);
+      }}
+    >
+      {children}
+    </ControlledSelect>
+  );
+};
+
+// Inside Uncontrolled components, the states are managed within the component itself.
+// parent cannot access the state data directly as they do in Controlled component
+// To access the data inside Uncontrolled components, we can use FormData to get data from Form submission
+
+// It is difficult for consumers to decided which components (Controlled vs Uncontrolled) to use
+// To makes things easier, it is best to internally toggle Controlled vs Uncontrolled components
+// based on the props passed in
+
+// https://github.com/radix-ui/primitives/blob/main/packages/react/use-controllable-state/src/use-controllable-state.tsx#L5
+
+export const Select = ({ value, defaultValue, onChange }) => {
+  // if value
+  const isControlled = value !== undefined;
+  const SelectElement = isControlled ? ControlledSelect : UncontrolledSelect;
+  return (
+    <SelectElement
+      value={value}
+      defaultValue={defaultValue}
+      onChange={onChange}
+    />
+  );
+};
