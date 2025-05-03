@@ -123,13 +123,7 @@ export const Select = ({ value, defaultValue, onChange, children }) => {
   // prop.value = valueStateOutside
   // prop.onChange = setValueStateOutside  set the valueState to a new value onChange
 
-  // if Uncontrolled
-  // value = valueStateInside (default value is sensible default or defaultValue)
-  // onChange =
-
   const isControlled = value !== undefined;
-  console.log({ isControlled });
-  console.log({ value });
   const SelectElement = isControlled ? ControlledSelect : UncontrolledSelect;
   return (
     <SelectElement
@@ -143,3 +137,63 @@ export const Select = ({ value, defaultValue, onChange, children }) => {
 };
 
 export default Select;
+
+// if Uncontrolled
+// value = valueStateInside (default value is sensible default or defaultValue)
+// onChange = callback(value) >> pass the value outside via callback function
+
+// if I have a useControllableState(prop, defaultProp, onChange) hook
+// I want to return a {valueState, setValueState}
+// if Controlled, valueState = prop, setValueState = onChange(value)
+
+// If Uncontrolled, valueState = useUncontrolledState(defaultProp, onChange)
+//
+
+// useUncontrolledState(defaultProp, onChange)
+
+function useControllableState({ prop, defaultProp, onChange }) {
+  // if Controlled, use the state and setState passed in from outside
+  // ignore defaultProp, as it is only used in UncontrolledState
+  /**
+   * const [value, setValue] = React.useState('newest');
+   * <Select value={value} onChange={(ev) => setValue(ev.target.value)} >
+   * </Select>
+   */
+  let value;
+  let setValue;
+  if (prop !== undefined) {
+    value = prop;
+    setValue = (newValue) => {
+      onChange(newValue);
+      value = newValue;
+    };
+  }
+
+  // return the state setter set to make API contract consistent
+  return { value, setValue };
+}
+
+export const SelectUsingControllableHook = ({
+  children,
+  value: propValue,
+  onChange,
+}) => {
+  // Create Controlled version first
+
+  // if Controlled,
+  const { value, setValue } = useControllableState({
+    prop: propValue,
+    onChange: onChange,
+  });
+
+  return (
+    <ControlledSelect
+      value={value}
+      onChange={(ev) => {
+        setValue(ev.target.value);
+      }}
+    >
+      {children}
+    </ControlledSelect>
+  );
+};

@@ -1,4 +1,8 @@
-import Select, { UncontrolledSelect } from './Select';
+import React from 'react';
+import Select, {
+  SelectUsingControllableHook,
+  UncontrolledSelect,
+} from './Select';
 
 const meta = {
   component: Select,
@@ -38,5 +42,18 @@ export const Uncontrolled = () => {
         <option value="curated">Curated</option>
       </Select>
     </>
+  );
+};
+
+export const ControlledUsingHook = () => {
+  const [value, setValue] = React.useState('newest');
+  return (
+    <SelectUsingControllableHook
+      value={value}
+      onChange={(value) => setValue(value)}
+    >
+      <option value="newest">Newest Releases</option>
+      <option value="price">Price</option>
+    </SelectUsingControllableHook>
   );
 };
