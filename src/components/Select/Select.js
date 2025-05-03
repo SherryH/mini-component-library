@@ -86,10 +86,7 @@ export const ControlledSelect = ({ value, onChange, children, ...rest }) => {
 export const UncontrolledSelect = ({ children, defaultValue, onChange }) => {
   const [value, setValue] = React.useState(defaultValue);
   const onChangeCallback = React.useCallback(onChange, []);
-  console.log({ value });
   React.useEffect(() => {
-    console.log('inside useeffect');
-    console.log({ value });
     onChange(value);
   }, [value, onChangeCallback]);
   return (
@@ -159,23 +156,40 @@ function useControllableState({ prop, defaultProp, onChange }) {
    * <Select value={value} onChange={(ev) => setValue(ev.target.value)} >
    * </Select>
    */
-  let value;
-  let setValue;
-  if (prop !== undefined) {
-    value = prop;
-    setValue = (newValue) => {
-      onChange(newValue);
-      value = newValue;
-    };
+  // let value;
+  // let setValue;
+  // if (prop !== undefined) {
+  //   value = prop;
+  //   setValue = (newValue) => {
+  //     onChange(newValue);
+  //     value = newValue;
+  //   };
+  // }
+  function controlledSetter(newValue) {
+    onChange(newValue);
+    value = newValue;
   }
+  // the component is controlled if prop is not defined
+  const isControlled = prop !== undefined;
+  // prop is uncontrolled
+  // the defaultProp is used if provided
+  // create the states here
+  // Not using else {} here as React hooks cant be used inside conditionals
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultProp);
+
+  let value = isControlled ? prop : uncontrolledValue;
+  const setValue = isControlled ? controlledSetter : setUncontrolledValue;
 
   // return the state setter set to make API contract consistent
   return { value, setValue };
 }
 
+function useUncontrolledState() {}
+
 export const SelectUsingControllableHook = ({
   children,
   value: propValue,
+  defaultValue,
   onChange,
 }) => {
   // Create Controlled version first
@@ -184,6 +198,7 @@ export const SelectUsingControllableHook = ({
   const { value, setValue } = useControllableState({
     prop: propValue,
     onChange: onChange,
+    defaultProp: defaultValue,
   });
 
   return (

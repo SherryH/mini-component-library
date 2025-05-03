@@ -57,3 +57,12 @@ export const ControlledUsingHook = () => {
     </SelectUsingControllableHook>
   );
 };
+
+export const UncontrolledUsingHook = () => {
+  return (
+    <SelectUsingControllableHook defaultValue="price">
+      <option value="newest">Newest Releases</option>
+      <option value="price">Price</option>
+    </SelectUsingControllableHook>
+  );
+};
