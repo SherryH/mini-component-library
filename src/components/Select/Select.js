@@ -156,15 +156,7 @@ function useControllableState({ prop, defaultProp, onChange }) {
    * <Select value={value} onChange={(ev) => setValue(ev.target.value)} >
    * </Select>
    */
-  // let value;
-  // let setValue;
-  // if (prop !== undefined) {
-  //   value = prop;
-  //   setValue = (newValue) => {
-  //     onChange(newValue);
-  //     value = newValue;
-  //   };
-  // }
+
   function controlledSetter(newValue) {
     onChange(newValue);
     value = newValue;
@@ -179,6 +171,18 @@ function useControllableState({ prop, defaultProp, onChange }) {
 
   let value = isControlled ? prop : uncontrolledValue;
   const setValue = isControlled ? controlledSetter : setUncontrolledValue;
+
+  const onChangeRef = React.useRef(onChange);
+
+  // Update the ref when onChange changes
+  React.useEffect(() => {
+    onChangeRef.current = onChange;
+  }, [onChange]);
+
+  // Use the ref in your effect
+  React.useEffect(() => {
+    onChangeRef.current(value);
+  }, [value]);
 
   // return the state setter set to make API contract consistent
   return { value, setValue };

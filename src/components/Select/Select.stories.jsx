@@ -60,7 +60,12 @@ export const ControlledUsingHook = () => {
 
 export const UncontrolledUsingHook = () => {
   return (
-    <SelectUsingControllableHook defaultValue="price">
+    <SelectUsingControllableHook
+      defaultValue="price"
+      onChange={(value) => {
+        console.log(value);
+      }}
+    >
       <option value="newest">Newest Releases</option>
       <option value="price">Price</option>
     </SelectUsingControllableHook>
