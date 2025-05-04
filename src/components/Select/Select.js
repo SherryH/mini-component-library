@@ -167,7 +167,10 @@ function useControllableState({ prop, defaultProp, onChange }) {
   // the defaultProp is used if provided
   // create the states here
   // Not using else {} here as React hooks cant be used inside conditionals
-  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultProp);
+  const { uncontrolledValue, setUncontrolledValue } = useUncontrolledState(
+    defaultProp,
+    onChange
+  );
 
   let value = isControlled ? prop : uncontrolledValue;
   // const setValue = isControlled ? controlledSetter : setUncontrolledValue;
@@ -182,31 +185,31 @@ function useControllableState({ prop, defaultProp, onChange }) {
     }
   };
 
+  // return the state setter set to make API contract consistent
+  return { value, setValue };
+}
+
+function useUncontrolledState(defaultProp, onChange) {
   // handle Uncontrolled
+  const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultProp);
+
   const onChangeRef = React.useRef(onChange);
   const preValue = React.useRef(uncontrolledValue);
-
   // Update the ref when value changes
   React.useEffect(() => {
-    console.log(preValue.current);
-    if (preValue.current !== value) {
-      console.log({ value });
-      console.log({ preValue });
-      onChangeRef.current(value);
-      preValue.current = value;
+    if (preValue.current !== uncontrolledValue) {
+      onChangeRef.current(uncontrolledValue);
+      preValue.current = uncontrolledValue;
     }
-  }, [value]);
+  }, [uncontrolledValue]);
 
   // Update the ref when onChange changes
   React.useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
 
-  // return the state setter set to make API contract consistent
-  return { value, setValue };
+  return { uncontrolledValue, setUncontrolledValue };
 }
-
-function useUncontrolledState() {}
 
 export const SelectUsingControllableHook = ({
   children,
