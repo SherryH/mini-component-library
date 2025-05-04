@@ -170,19 +170,37 @@ function useControllableState({ prop, defaultProp, onChange }) {
   const [uncontrolledValue, setUncontrolledValue] = React.useState(defaultProp);
 
   let value = isControlled ? prop : uncontrolledValue;
-  const setValue = isControlled ? controlledSetter : setUncontrolledValue;
+  // const setValue = isControlled ? controlledSetter : setUncontrolledValue;
+  const setValue = (nextValue) => {
+    const isFunction = (nextValue) => typeof nextValue === 'function';
+    if (isControlled) {
+      const newValue = isFunction(nextValue) ? nextValue(prop) : nextValue;
+      console.log({ nextValue });
+      onChange(newValue);
+    } else {
+      setUncontrolledValue(nextValue);
+    }
+  };
 
+  // handle Uncontrolled
   const onChangeRef = React.useRef(onChange);
+  const preValue = React.useRef(uncontrolledValue);
+
+  // Update the ref when value changes
+  React.useEffect(() => {
+    console.log(preValue.current);
+    if (preValue.current !== value) {
+      console.log({ value });
+      console.log({ preValue });
+      onChangeRef.current(value);
+      preValue.current = value;
+    }
+  }, [value]);
 
   // Update the ref when onChange changes
   React.useEffect(() => {
     onChangeRef.current = onChange;
   }, [onChange]);
-
-  // Use the ref in your effect
-  React.useEffect(() => {
-    onChangeRef.current(value);
-  }, [value]);
 
   // return the state setter set to make API contract consistent
   return { value, setValue };
