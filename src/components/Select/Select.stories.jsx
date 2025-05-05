@@ -1,8 +1,5 @@
 import React from 'react';
-import Select, {
-  SelectUsingControllableHook,
-  UncontrolledSelect,
-} from './Select';
+import Select, { SelectUsingControllableHook } from './Select';
 
 const meta = {
   component: Select,

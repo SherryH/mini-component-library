@@ -85,10 +85,13 @@ export const ControlledSelect = ({ value, onChange, children, ...rest }) => {
 // pass the data out using the onChange callback
 export const UncontrolledSelect = ({ children, defaultValue, onChange }) => {
   const [value, setValue] = React.useState(defaultValue);
-  const onChangeCallback = React.useCallback(onChange, []);
+  const onChangeRef = React.useRef();
   React.useEffect(() => {
-    onChange(value);
-  }, [value, onChangeCallback]);
+    onChangeRef.current = onChange;
+  }, [onChange]);
+  React.useEffect(() => {
+    onChangeRef.current(value);
+  }, [value, onChangeRef]);
   return (
     <ControlledSelect
       id="filter-by"
