@@ -157,33 +157,30 @@ function useControllableState({ prop, defaultProp, onChange }) {
    * </Select>
    */
 
-  function controlledSetter(newValue) {
-    onChange(newValue);
-    value = newValue;
-  }
   // the component is controlled if prop is not defined
   const isControlled = prop !== undefined;
   // prop is uncontrolled
   // the defaultProp is used if provided
   // create the states here
   // Not using else {} here as React hooks cant be used inside conditionals
-  const { uncontrolledValue, setUncontrolledValue } = useUncontrolledState(
-    defaultProp,
-    onChange
-  );
+  const { uncontrolledValue, setUncontrolledValue, onChangeRef } =
+    useUncontrolledState(defaultProp, onChange);
 
   let value = isControlled ? prop : uncontrolledValue;
   // const setValue = isControlled ? controlledSetter : setUncontrolledValue;
-  const setValue = (nextValue) => {
-    const isFunction = (nextValue) => typeof nextValue === 'function';
-    if (isControlled) {
-      const newValue = isFunction(nextValue) ? nextValue(prop) : nextValue;
-      console.log({ nextValue });
-      onChange(newValue);
-    } else {
-      setUncontrolledValue(nextValue);
-    }
-  };
+  const setValue = React.useCallback(
+    (nextValue) => {
+      const isFunction = (nextValue) => typeof nextValue === 'function';
+      if (isControlled) {
+        const newValue = isFunction(nextValue) ? nextValue(prop) : nextValue;
+        console.log({ nextValue });
+        onChangeRef(newValue);
+      } else {
+        setUncontrolledValue(nextValue);
+      }
+    },
+    [isControlled, prop, onChangeRef, setUncontrolledValue]
+  );
 
   // return the state setter set to make API contract consistent
   return { value, setValue };
@@ -208,7 +205,7 @@ function useUncontrolledState(defaultProp, onChange) {
     onChangeRef.current = onChange;
   }, [onChange]);
 
-  return { uncontrolledValue, setUncontrolledValue };
+  return { uncontrolledValue, setUncontrolledValue, onChangeRef };
 }
 
 export const SelectUsingControllableHook = ({
